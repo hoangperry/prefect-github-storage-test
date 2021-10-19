@@ -11,7 +11,7 @@ flow = Flow(
 	storage=GitHub(
 	    repo="hoangperry/prefect-github-storage-test",
 	    path="test-flow.py",
-	    access_token_secret="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"
+	    access_token_secret="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"
 	), 
 	run_config=UniversalRun(labels=["mail.kernel.vn"])
 )
