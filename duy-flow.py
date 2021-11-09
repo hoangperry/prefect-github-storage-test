@@ -8,6 +8,8 @@ import pandas as pd
 from prefect import task, Flow 
 from prefect.storage import GitHub
 
+logger = prefect.context.get("logger")
+
 
 @task 
 def preprocess_data():
@@ -26,31 +28,31 @@ def preprocess_data():
     """
 
     df = pd.read_sql_query(query, con=engine)
-    print("Loading data succesfully...")
-    print(df.head())
+    logger.info("Loading data succesfully...")
+    logger.info(df.head())
     return df
 
 
 @task 
 def predict_pmdarima(df):
-    print("Training...")
+    logger.info("Training...")
     x = df["revenue"]
     from sktime.forecasting.arima import AutoARIMA
     forecaster = AutoARIMA(start_p=8, max_p=9, suppress_warnings=True) 
     forecaster.fit(x)
-    print(forecaster.summary())
+    logger.info(forecaster.summary())
 
  
 @task
 def predict_statsmodel(df):
     from statsmodels.tsa.arima.model import ARIMA
 
-    print("Training...")
+    logger.info("Training...")
     x = df["revenue"].tolist() 
     model = ARIMA(x, order=(1, 1, 1))
     model = model.fit()
     y_hat = model.predict(len(x), len(x), typ='levels')[0]
-    print(f"Predict value: {y_hat}")
+    logger.info(f"Predict value: {y_hat}")
 
 
 with Flow(
